@@ -1,0 +1,85 @@
+{
+  "name": "petsc",
+  "version-string": "3.13.4",
+  "homepage": "https://www.mcs.anl.gov/petsc/",
+  "description": "Portable, Extensible Toolkit for Scientific Computation.",
+  "dependencies": [
+    "openblas",
+    "lapack",
+    "mpi"
+  ],
+  "features":  [
+    {
+      "name": "fortran",
+      "description": "Fortran bindings for PETSc"
+    },
+    {
+      "name": "complex",
+      "description": "Complex scalar support for PETSc"
+    },
+    {
+      "name": "scalapack",
+      "description": "ScaLAPACK support for PETSc",
+      "dependencies": [
+        "scalapack-reference"
+      ]
+    },
+    {
+      "name": "metis",
+      "description": "METIS support for PETSc",
+      "dependencies": [
+        "metis"
+      ]
+    },
+    {
+      "name": "parmetis",
+      "description": "ParMETIS support for PETSc",
+      "dependencies": [
+        "parmetis",
+        {
+          "name": "petsc",
+          "features" : ["metis"]
+        }
+      ]
+    },
+    {
+      "name": "hypre",
+      "description": "HYPRE support for PETSc",
+      "dependencies": [
+        "hypre"
+      ]
+    },
+    {
+      "name": "superludist",
+      "description": "SuperLU-Dist support for PETSc",
+      "dependencies": [
+        "superludist",
+        {
+          "name": "petsc",
+          "features" : ["parmetis"]
+        }
+      ]
+    },
+    {
+      "name": "mumps",
+      "description": "MUMPS support for PETSc",
+      "dependencies": [
+        "mumps",
+        {
+          "name": "petsc",
+          "features" : ["metis", "parmetis", "scalapack"]
+        }
+      ]
+    },
+    {
+      "name": "hdf5",
+      "description": "HDF5 support for PETSc",
+      "dependencies": [
+        {
+          "name": "hdf5",
+          "features" : ["parallel"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+--- a/share/petsc/examples/config/gmakegen - Copy.py	Sat Aug 01 07:08:16 2020
++++ b/share/petsc/examples/config/gmakegen.py	Fri Aug 21 10:36:19 2020
+@@ -129,7 +129,10 @@
+ 
+     def read_conf(self):
+         self.conf = dict()
+-        with open(self.arch_path('include', 'petscconf.h')) as petscconf_h:
++        petscconf_h_path = self.arch_path('include', 'petscconf.h')
++        if not os.path.exists(petscconf_h_path): 
++            petscconf_h_path = self.arch_path('..', 'include', 'petscconf.h')
++        with open(petscconf_h_path) as petscconf_h:
+             for line in petscconf_h:
+                 if line.startswith('#define '):
+                     define = line[len('#define '):]

@@ -1,0 +1,19 @@
+diff --git a/config/BuildSystem/config/compilerOptions.py b/config/BuildSystem/config/compilerOptions.py
+index 3f19f0ae61..294fcbed50 100644
+--- a/config/BuildSystem/config/compilerOptions.py
++++ b/config/BuildSystem/config/compilerOptions.py
+@@ -301,7 +301,13 @@ class CompilerOptions(config.base.Configure):
+         output = error + output
+       if not status:
+         if compiler.find('win32fe') > -1:
+-          version = '\\n'.join(output.split('\n')[0:2])
++          import re
++          regex = re.compile("Microsoft \(R\) C/C\+\+ Optimizing Compiler Version (\d+\.\d+.\d+)")
++          m = regex.search(output)
++          if m:
++            version = m.group(1)
++          else:
++            version = '\\n'.join(output.split('\n')[0:2])
+         else:
+           #PGI/Windows writes an empty '\r\n' on the first line of output
+           if output.count('\n') > 1 and output.split('\n')[0] == '\r':
