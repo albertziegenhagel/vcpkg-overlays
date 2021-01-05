@@ -1,0 +1,14 @@
+{
+  "name": "scalapack-reference",
+  "version-string": "2.1.0",
+  "homepage": "http://www.netlib.org/scalapack/",
+  "description": "ScaLAPACK is a library of high-performance linear algebra routines for parallel distributed memory machines",
+  "dependencies": [
+    "mpi",
+    "lapack",
+    {
+      "name": "vcpkg-gfortran",
+      "platform": "windows & static"
+    }
+  ]
+}

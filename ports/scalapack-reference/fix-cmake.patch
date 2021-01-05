@@ -1,0 +1,62 @@
+--- CMakeLists.txt	Tue Nov 26 22:37:04 2019
++++ CMakeLists.txt	Tue Aug 18 18:00:59 2020
+@@ -29,6 +29,7 @@
+    message(STATUS "Found MPI_LIBRARY : ${MPI_FOUND} ")
+    INCLUDE_DIRECTORIES(${MPI_INCLUDE_PATH})
+ 
++   if(FALSE)
+    find_program(MPI_C_COMPILER
+       NAMES mpicc
+       HINTS "${MPI_BASE_DIR}"
+@@ -59,6 +60,7 @@
+       SET(CMAKE_Fortran_COMPILER "${MPI_Fortran_COMPILER}")
+       message(STATUS "--> Fortran Compiler : ${CMAKE_Fortran_COMPILER}")
+    endif()
++   endif()
+    
+ else()
+    message(STATUS "Found MPI_LIBRARY : ${MPI_FOUND} ")
+@@ -118,10 +120,13 @@
+ #
+ #   Fortran Mangling, MPI Tests and BLACS settings
+ #
+-include(FortranMangling)
+-COMPILE(install_COMPILED)
++include(FortranCInterface)
++if(FortranCInterface_GLOBAL_CASE STREQUAL "UPPER")
++   set(CDEFS "UpCase")
++elseif(FortranCInterface_GLOBAL_SUFFIX STREQUAL "_")
++   set(CDEFS "Add_")
++endif()
+ 
+-FORTRAN_MANGLING(CDEFS)
+ #MESSAGE(STATUS "Setting CDEFS = ${CDEFS}")
+ #set(CDEFS ${CDEFS} CACHE STRING "Fortran Mangling" FORCE)
+ MESSAGE(STATUS "=========")
+@@ -230,20 +235,22 @@
+ append_subdir_files(src "SRC")
+ append_subdir_files(src-C "SRC")
+ 
+-if (UNIX)
++if (UNIX OR TRUE)
+    add_library(scalapack ${blacs} ${tools} ${tools-C} ${extra_lapack} ${pblas} ${pblas-F} ${ptzblas} ${ptools} ${pbblas} ${redist} ${src} ${src-C})
+-   target_link_libraries( scalapack ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
++   target_link_libraries( scalapack ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} ${MPI_C_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+    scalapack_install_library(scalapack)
+ else (UNIX) # Need to separate Fortran and C Code
+    OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON )
+    add_library(scalapack ${blacs} ${tools-C} ${pblas} ${ptools} ${redist} ${src-C})
+-   target_link_libraries( scalapack ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
++   target_link_libraries( scalapack ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} ${MPI_C_LIBRARIES})
+    add_library(scalapack-F ${pblas-F} ${pbblas} ${ptzblas} ${tools} ${src} ${extra_lapack} )
+-   target_link_libraries( scalapack-F ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
++   target_link_libraries( scalapack-F ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} ${MPI_Fortran_LIBRARIES})
+    scalapack_install_library(scalapack)
+    scalapack_install_library(scalapack-F)
+ endif (UNIX)
++if(BUILD_TESTING)
+ add_subdirectory(TESTING)
++endif()
+ 
+ # --------------------------------------------------
+ # CPACK Packaging 
