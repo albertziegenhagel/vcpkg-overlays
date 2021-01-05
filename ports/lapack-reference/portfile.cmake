@@ -67,6 +67,7 @@ vcpkg_configure_cmake(
             "-DUSE_OPTIMIZED_BLAS=${USE_OPTIMIZED_BLAS}"
             "-DCBLAS=${CBLAS}"
             ${FORTRAN_CMAKE}
+            -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON
         )
 
 vcpkg_install_cmake()
