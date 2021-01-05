@@ -1,0 +1,17 @@
+{
+  "name": "mumps",
+  "version-string": "5.3.5",
+  "homepage": "http://mumps.enseeiht.fr",
+  "description": "a MUltifrontal Massively Parallel sparse direct Solver",
+  "dependencies": [
+    {
+      "name": "vcpkg-gfortran",
+      "platform": "windows & static"
+    },
+    "lapack-reference",
+    "scalapack-reference",
+    "msmpi",
+    "metis",
+    "parmetis"
+  ]
+}
