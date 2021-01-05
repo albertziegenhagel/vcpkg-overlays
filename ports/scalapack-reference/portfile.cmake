@@ -14,22 +14,12 @@ vcpkg_from_github(
 include(vcpkg_find_fortran)
 vcpkg_find_fortran(FORTRAN_CMAKE)
 
-set(CONFIGURE_OPTIONS)
-if(VCPKG_TARGET_IS_WINDOWS)
-    set(FORTRAN_MPI_LIBS msmpifec msmpi)
-    string(REPLACE ";" "\\\\\\\\\\\\\;" FORTRAN_MPI_LIBS "${FORTRAN_MPI_LIBS}")
-    list(APPEND CONFIGURE_OPTIONS
-        "-DMPI_Fortran_LIB_NAMES=${FORTRAN_MPI_LIBS}"
-    )
-endif()
-
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     DISABLE_PARALLEL_CONFIGURE
     OPTIONS
         -DBUILD_TESTING=OFF
-        ${CONFIGURE_OPTIONS}
         ${FORTRAN_CMAKE}
         -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON
 )
