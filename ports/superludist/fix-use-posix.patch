@@ -1,0 +1,11 @@
+--- a/SRC/memory.c	Fri Apr 03 07:16:52 2020
++++ b/SRC/memory.c	Mon Aug 17 15:06:41 2020
+@@ -122,7 +122,7 @@
+ #else  /* The production mode. */
+ 
+ //#if  0 
+-#if (__STDC_VERSION__ >= 201112L)
++#if (__STDC_VERSION__ >= 201112L) && !defined(WIN32)
+ 
+ void * superlu_malloc_dist(size_t size) {void* ptr;int alignment=1<<12;if(size>1<<19){alignment=1<<21;}posix_memalign( (void**)&(ptr), alignment, size );return(ptr);}
+ void   superlu_free_dist(void * ptr)    {free(ptr);}
