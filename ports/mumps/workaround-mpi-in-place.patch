@@ -1,0 +1,173 @@
+--- a/src/csol_distrhs.F	Mon Aug 24 16:07:48 2020
++++ b/src/csol_distrhs.F	Mon Aug 24 16:10:14 2020
+@@ -51,7 +51,7 @@
+ !$    LOGICAL :: OMP_FLAG
+ !$    INTEGER :: CHUNK, NOMP
+ !$    INTEGER(8) :: CHUNK8
+-      INTEGER :: allocok
++      INTEGER :: allocok, temp
+       INTEGER :: MAXRECORDS
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NBROWSTOSEND 
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NEXTROWTOSEND 
+@@ -82,9 +82,10 @@
+         INFO(2) = NSLAVES+NSLAVES+NRHS_loc
+       ENDIF
+       NB_BYTES_LOC = int(2*NSLAVES+NRHS_loc,8)*KEEP(34)
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .GT. 0) RETURN
+       NBROWSTOSEND(1:NSLAVES) = 0
+       DO Iloc = 1, NRHS_loc
+@@ -141,9 +142,10 @@
+      &  KEEP(35) * (
+      &      int( MAXRECORDS,8)*int(NRHS_COL,8)*int(MAX_ACTIVE_SENDS,8)
+      &      + int(MAXRECORDS,8) * int(NRHS_COL,8) )
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .NE. 0) RETURN
+       NB_ACTIVE_SENDS = 0
+       DO IREQ = 1, MAX_ACTIVE_SENDS
+--- a/src/dsol_distrhs.F	Mon Aug 24 16:08:09 2020
++++ b/src/dsol_distrhs.F	Mon Aug 24 16:10:36 2020
+@@ -51,7 +51,7 @@
+ !$    LOGICAL :: OMP_FLAG
+ !$    INTEGER :: CHUNK, NOMP
+ !$    INTEGER(8) :: CHUNK8
+-      INTEGER :: allocok
++      INTEGER :: allocok, temp
+       INTEGER :: MAXRECORDS
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NBROWSTOSEND 
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NEXTROWTOSEND 
+@@ -82,9 +82,10 @@
+         INFO(2) = NSLAVES+NSLAVES+NRHS_loc
+       ENDIF
+       NB_BYTES_LOC = int(2*NSLAVES+NRHS_loc,8)*KEEP(34)
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .GT. 0) RETURN
+       NBROWSTOSEND(1:NSLAVES) = 0
+       DO Iloc = 1, NRHS_loc
+@@ -141,9 +142,10 @@
+      &  KEEP(35) * (
+      &      int( MAXRECORDS,8)*int(NRHS_COL,8)*int(MAX_ACTIVE_SENDS,8)
+      &      + int(MAXRECORDS,8) * int(NRHS_COL,8) )
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .NE. 0) RETURN
+       NB_ACTIVE_SENDS = 0
+       DO IREQ = 1, MAX_ACTIVE_SENDS
+--- a/src/sol_common.F	Mon Aug 24 16:08:11 2020
++++ b/src/sol_common.F	Mon Aug 24 16:08:33 2020
+@@ -112,16 +112,17 @@
+       INTEGER, INTENT(INOUT) :: INFO(80)
+       INTEGER, INTENT(IN)    :: ICNTL(60)
+       INCLUDE 'mpif.h'
+-      INTEGER :: I, NFS_LOC, NFS_TOT, IERR_MPI, allocok
++      INTEGER :: I, NFS_LOC, NFS_TOT, IERR_MPI, allocok, temp
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: GLOBAL_MAPPING 
+       ALLOCATE(GLOBAL_MAPPING(N), stat=allocok)
+       IF (allocok .GT. 0) THEN
+         INFO(1)=-13
+         INFO(2)= N
+       ENDIF
+-      CALL MPI_ALLREDUCE(MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE(temp, allocok, 1,
+      &                   MPI_INTEGER, MPI_SUM,
+      &                   COMM_NODES, IERR_MPI)
++      allocok = temp
+       IF (allocok .NE. 0) RETURN
+       NFS_LOC = 0
+       NFS_TOT = 0
+@@ -145,8 +146,9 @@
+      &  NFS_LOC, NFS_TOT, N
+         CALL MUMPS_ABORT()
+       ENDIF
+-      CALL MPI_ALLREDUCE(MPI_IN_PLACE, GLOBAL_MAPPING, N, MPI_INTEGER,
++      CALL MPI_ALLREDUCE(temp, GLOBAL_MAPPING, N, MPI_INTEGER,
+      &                   MPI_SUM, COMM_NODES, IERR_MPI)
++      allocok = temp
+       DO I = 1, Nloc_RHS
+         IF (IRHS_loc(I) .GE.1 .AND. IRHS_loc(I) .LE. N) THEN
+           MAP_RHS_loc(I) = GLOBAL_MAPPING(IRHS_loc(I))
+--- a/src/ssol_distrhs.F	Mon Jun 15 11:57:49 2020
++++ b/src/ssol_distrhs.F	Mon Aug 24 16:10:29 2020
+@@ -51,7 +51,7 @@
+ !$    LOGICAL :: OMP_FLAG
+ !$    INTEGER :: CHUNK, NOMP
+ !$    INTEGER(8) :: CHUNK8
+-      INTEGER :: allocok
++      INTEGER :: allocok, temp
+       INTEGER :: MAXRECORDS
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NBROWSTOSEND 
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NEXTROWTOSEND 
+@@ -82,9 +82,10 @@
+         INFO(2) = NSLAVES+NSLAVES+NRHS_loc
+       ENDIF
+       NB_BYTES_LOC = int(2*NSLAVES+NRHS_loc,8)*KEEP(34)
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .GT. 0) RETURN
+       NBROWSTOSEND(1:NSLAVES) = 0
+       DO Iloc = 1, NRHS_loc
+@@ -141,9 +142,10 @@
+      &  KEEP(35) * (
+      &      int( MAXRECORDS,8)*int(NRHS_COL,8)*int(MAX_ACTIVE_SENDS,8)
+      &      + int(MAXRECORDS,8) * int(NRHS_COL,8) )
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .NE. 0) RETURN
+       NB_ACTIVE_SENDS = 0
+       DO IREQ = 1, MAX_ACTIVE_SENDS
+--- a/src/zsol_distrhs.F	Mon Jun 15 11:57:53 2020
++++ b/src/zsol_distrhs.F	Mon Aug 24 16:10:22 2020
+@@ -51,7 +51,7 @@
+ !$    LOGICAL :: OMP_FLAG
+ !$    INTEGER :: CHUNK, NOMP
+ !$    INTEGER(8) :: CHUNK8
+-      INTEGER :: allocok
++      INTEGER :: allocok, temp
+       INTEGER :: MAXRECORDS
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NBROWSTOSEND 
+       INTEGER, ALLOCATABLE, DIMENSION(:) :: NEXTROWTOSEND 
+@@ -82,9 +82,10 @@
+         INFO(2) = NSLAVES+NSLAVES+NRHS_loc
+       ENDIF
+       NB_BYTES_LOC = int(2*NSLAVES+NRHS_loc,8)*KEEP(34)
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .GT. 0) RETURN
+       NBROWSTOSEND(1:NSLAVES) = 0
+       DO Iloc = 1, NRHS_loc
+@@ -141,9 +142,10 @@
+      &  KEEP(35) * (
+      &      int( MAXRECORDS,8)*int(NRHS_COL,8)*int(MAX_ACTIVE_SENDS,8)
+      &      + int(MAXRECORDS,8) * int(NRHS_COL,8) )
+-      CALL MPI_ALLREDUCE( MPI_IN_PLACE, allocok, 1,
++      CALL MPI_ALLREDUCE( temp, allocok, 1,
+      &                    MPI_INTEGER, MPI_SUM,
+      &                    COMM_NODES, IERR_MPI )
++      allocok = temp
+       IF (allocok .NE. 0) RETURN
+       NB_ACTIVE_SENDS = 0
+       DO IREQ = 1, MAX_ACTIVE_SENDS
