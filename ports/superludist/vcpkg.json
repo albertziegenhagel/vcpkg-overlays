@@ -1,0 +1,22 @@
+{
+  "name": "superludist",
+  "version-string": "6.3.1",
+  "homepage": "https://github.com/xiaoyeli/superlu_dist",
+  "description": "SuperLU_DIST is a parallel library for the direct solution of large, sparse, nonsymmetric systems of linear equations for distributed memory machines.",
+  "dependencies": [
+    "mpi",
+    {
+      "name": "openblas",
+      "platform": "!osx"
+    },
+    "lapack",
+    "parmetis"
+  ],
+  "features":  [
+    {
+      "name": "parmetis",
+      "description": "Enable parmetis support",
+      "dependencies": [ "parmetis" ]
+    }
+  ]
+}

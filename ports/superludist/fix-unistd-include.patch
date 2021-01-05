@@ -1,0 +1,12 @@
+--- a/SRC/util.c	Mon Apr 29 19:12:55 2019
++++ b/SRC/util.c	Fri Feb 08 18:30:10 2019
+@@ -22,7 +22,9 @@
+  */
+ 
+ #include <math.h>
++#ifndef WIN32
+ #include <unistd.h>
++#endif
+ #include "superlu_ddefs.h"
+ 
+ /*! \brief Deallocate the structure pointing to the actual storage of the matrix. */

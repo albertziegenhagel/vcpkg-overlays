@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt	Mon Aug 17 16:22:30 2020
++++ b/CMakeLists.txt	Mon Aug 17 15:52:40 2020
+@@ -8,7 +8,7 @@
+ cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
+ 
+ # Project version numbers
+-project(SuperLU_DIST C CXX Fortran)
++project(SuperLU_DIST C CXX)
+ set(VERSION_MAJOR "6")
+ set(VERSION_MINOR "3")
+ set(VERSION_BugFix "1")
