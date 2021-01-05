@@ -1,0 +1,4 @@
+Source: vcpkg-gfortran
+Version: 4
+Description: Metaport to install fortran dependencies if VCPKG_USE_EXTERNAL_Fortran is false
+Supports: windows & !arm
