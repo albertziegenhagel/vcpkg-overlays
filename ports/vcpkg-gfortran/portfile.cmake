@@ -11,42 +11,44 @@ if(VCPKG_USE_INTERNAL_Fortran)
     endif()
 
     if(HOST_ARCH MATCHES "(amd|AMD)64")
-        set(MINGW_W w64)
-        set(MSYS_HOST x86_64)
-    elseif(HOST_ARCH MATCHES "(x|X)86")
-        set(MINGW_W w32)
-        set(MSYS_HOST i686)
+
+    # elseif(HOST_ARCH MATCHES "(x|X)86")
+
     else()
         message(FATAL_ERROR "Unsupported host architecture ${HOST_ARCH}!" )
     endif()
 
     if(VCPKG_TARGET_ARCHITECTURE MATCHES "(x|X)64")
-        set(MSYS_TARGET x86_64)
-        set(MINGW_W_TARGET 64)
-        set(GCC_LIB_SUFFIX s_seh-1)
-    elseif(VCPKG_TARGET_ARCHITECTURE MATCHES "(x|X)86")
-        set(MSYS_TARGET i686)
-        set(MINGW_W_TARGET 32)
-        set(GCC_LIB_SUFFIX s_dw2-1)
+
+    # elseif(VCPKG_TARGET_ARCHITECTURE MATCHES "(x|X)86")
+
     else()
         message(FATAL_ERROR "Unsupported target architecture ${VCPKG_TARGET_ARCHITECTURE}!" )
     endif()
 
-    set(MINGW_BIN "${vcpkg_find_fortran_MSYS_ROOT}/mingw${MINGW_W_TARGET}/bin/")
-    set(MINGW_Fortran_DLLS
-        "${MINGW_BIN}/libgfortran-5.dll"
-        "${MINGW_BIN}/libquadmath-0.dll"
-        "${MINGW_BIN}/libwinpthread-1.dll"
-        "${MINGW_BIN}/libgcc_${GCC_LIB_SUFFIX}.dll"
-    )
-    file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
-    file(COPY ${MINGW_Fortran_DLLS} DESTINATION "${CURRENT_PACKAGES_DIR}/bin")
-    file(COPY ${MINGW_Fortran_DLLS} DESTINATION "${CURRENT_PACKAGES_DIR}/debug/bin")
-    file(COPY "${vcpkg_find_fortran_MSYS_ROOT}/mingw${MINGW_W_TARGET}/share/licenses" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}")
-    file(INSTALL "${vcpkg_find_fortran_MSYS_ROOT}/mingw${MINGW_W_TARGET}/share/licenses/crt/COPYING.MinGW-w64-runtime.txt" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
-    set(VCPKG_POLICY_SKIP_DUMPBIN_CHECKS enabled) # due to outdated msvcrt
+    set(FLANG_VERSION "5.0.0")
+    set(FLANG_ROOT "${DOWNLOADS}/tools/flang/${FLANG_VERSION}")
+    set(FLANG_BIN "${FLANG_ROOT}/Library/bin")
+    set(FLANG_INC "${FLANG_ROOT}/Library/include")
+
+    set(FLANG_Fortran_DLLS "${FLANG_BIN}/flang.dll"
+                           "${FLANG_BIN}/flangrti.dll"
+                           "${FLANG_BIN}/libomp.dll")
+    file(INSTALL ${FLANG_Fortran_DLLS} DESTINATION "${CURRENT_PACKAGES_DIR}/bin")
+    file(INSTALL ${FLANG_Fortran_DLLS} DESTINATION "${CURRENT_PACKAGES_DIR}/debug/bin")
+
+    set(FLANG_Fortran_MODULES "${FLANG_INC}/ieee_arithmetic.mod"
+                              "${FLANG_INC}/ieee_exceptions.mod"
+                              "${FLANG_INC}/ieee_features.mod"
+                              "${FLANG_INC}/iso_c_binding.mod"
+                              "${FLANG_INC}/iso_fortran_env.mod"
+                              "${FLANG_INC}/omp_lib.mod"
+                              "${FLANG_INC}/omp_lib_kinds.mod")
+    file(INSTALL ${FLANG_Fortran_DLLS} DESTINATION "${CURRENT_PACKAGES_DIR}/include")
+
     set(VCPKG_POLICY_DLLS_WITHOUT_LIBS enabled)
     set(VCPKG_POLICY_EMPTY_INCLUDE_FOLDER enabled)
+    file(INSTALL "${FLANG_ROOT}/info/LICENSE.txt" DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME copyright)
 else()
     set(VCPKG_POLICY_EMPTY_PACKAGE enabled)
 endif()
