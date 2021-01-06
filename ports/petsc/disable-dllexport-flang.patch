@@ -1,0 +1,165 @@
+diff --git a/include/petsc/mpiuni/mpi.h b/include/petsc/mpiuni/mpi.h
+index a25c53ddeb..022740b3d7 100644
+--- a/include/petsc/mpiuni/mpi.h
++++ b/include/petsc/mpiuni/mpi.h
+@@ -99,7 +99,7 @@
+ #include <stddef.h>
+ 
+ /*  This is reproduced from petscsys.h so that mpi.h can be used standalone without first including petscsys.h */
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ #  define MPIUni_PETSC_DLLEXPORT __declspec(dllexport)
+ #  define MPIUni_PETSC_DLLIMPORT __declspec(dllimport)
+ #elif defined(PETSC_USE_VISIBILITY_CXX) && defined(__cplusplus)
+diff --git a/include/petscsys.h b/include/petscsys.h
+index 7179471cf0..37c1f24fcc 100644
+--- a/include/petscsys.h
++++ b/include/petscsys.h
+@@ -69,7 +69,7 @@ void assert_never_put_petsc_headers_inside_an_extern_c(int); void assert_never_p
+ 
+ #define PETSC_STATIC_INLINE static PETSC_INLINE
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) /* For Win32 shared libraries */
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG) /* For Win32 shared libraries */
+ #  define PETSC_DLLEXPORT __declspec(dllexport)
+ #  define PETSC_DLLIMPORT __declspec(dllimport)
+ #  define PETSC_VISIBILITY_INTERNAL
+diff --git a/src/mat/f90-mod/petscmat.h b/src/mat/f90-mod/petscmat.h
+index 083031325b..077d37589b 100644
+--- a/src/mat/f90-mod/petscmat.h
++++ b/src/mat/f90-mod/petscmat.h
+@@ -350,7 +350,7 @@
+ !
+ !  End of Fortran include file for the Mat package in PETSc
+ !
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_MAT
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_MATFDCOLORING
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_MATNULLSPACE
+diff --git a/src/mat/f90-mod/petscmatmod.F90 b/src/mat/f90-mod/petscmatmod.F90
+index 87b5ee5fa3..956545db11 100644
+--- a/src/mat/f90-mod/petscmatmod.F90
++++ b/src/mat/f90-mod/petscmatmod.F90
+@@ -84,7 +84,7 @@
+           matnullspaceequals = (A%v .eq. B%v)
+         end function
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::matnotequal
+ !DEC$ ATTRIBUTES DLLEXPORT::matequals
+ !DEC$ ATTRIBUTES DLLEXPORT::matfdcoloringnotequal
+diff --git a/src/sys/classes/bag/f2003-src/fsrc/bagenum.F90 b/src/sys/classes/bag/f2003-src/fsrc/bagenum.F90
+index a5cfbafa00..c91957bf41 100644
+--- a/src/sys/classes/bag/f2003-src/fsrc/bagenum.F90
++++ b/src/sys/classes/bag/f2003-src/fsrc/bagenum.F90
+@@ -1,7 +1,7 @@
+ 
+ #include "petsc/finclude/petscsys.h"
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PetscBagRegisterEnum
+ #endif
+       Subroutine PetscBagRegisterEnum(bag,addr,FArray,def,n,h,ierr)
+diff --git a/src/sys/f90-mod/petscsys.h b/src/sys/f90-mod/petscsys.h
+index e044de4391..b4a9b63206 100644
+--- a/src/sys/f90-mod/petscsys.h
++++ b/src/sys/f90-mod/petscsys.h
+@@ -222,7 +222,7 @@
+       PetscEnum, parameter :: PETSC_SUBCOMM_CONTIGUOUS = 1
+       PetscEnum, parameter :: PETSC_SUBCOMM_INTERLACED = 2
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PetscReal_Private
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_REAL_KIND
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_OPTIONS
+diff --git a/src/sys/f90-mod/petscsysmod.F90 b/src/sys/f90-mod/petscsysmod.F90
+index 04942b484f..2874be2d4b 100644
+--- a/src/sys/f90-mod/petscsysmod.F90
++++ b/src/sys/f90-mod/petscsysmod.F90
+@@ -234,7 +234,7 @@
+           type(tPetscRandom), intent(in) :: A,B
+           petscrandomequals = (A%v .eq. B%v)
+         end function
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::petscviewernotequal
+ !DEC$ ATTRIBUTES DLLEXPORT::petscviewerequals
+ !DEC$ ATTRIBUTES DLLEXPORT::petscrandomnotequal
+@@ -277,7 +277,7 @@
+ #include <../src/sys/f90-mod/ftn-auto-interfaces/petscsys.h90>
+         end interface
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_COMM_SELF
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_COMM_WORLD
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_CHARACTER
+diff --git a/src/sys/f90-mod/petscviewer.h b/src/sys/f90-mod/petscviewer.h
+index d41c350c65..4ce8c9c386 100644
+--- a/src/sys/f90-mod/petscviewer.h
++++ b/src/sys/f90-mod/petscviewer.h
+@@ -81,7 +81,7 @@
+ !
+ !  End of Fortran include file for the PetscViewer package in PETSc
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_VIEWER
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_VIEWER_STDOUT_SELF
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_VIEWER_DRAW_WORLD
+diff --git a/src/sys/fsrc/somefort.F90 b/src/sys/fsrc/somefort.F90
+index 3fd6c32281..bb15777821 100644
+--- a/src/sys/fsrc/somefort.F90
++++ b/src/sys/fsrc/somefort.F90
+@@ -15,7 +15,7 @@
+ 
+       return
+       end
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::MPIU_Abort
+ #endif
+ 
+diff --git a/src/sys/objects/f2003-src/fsrc/optionenum.F90 b/src/sys/objects/f2003-src/fsrc/optionenum.F90
+index 899a221bbc..0c518ae57e 100644
+--- a/src/sys/objects/f2003-src/fsrc/optionenum.F90
++++ b/src/sys/objects/f2003-src/fsrc/optionenum.F90
+@@ -1,7 +1,7 @@
+ 
+ #include "petsc/finclude/petscsys.h"
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PetscOptionsGetEnum
+ #endif
+ 
+diff --git a/src/vec/f90-mod/petscis.h b/src/vec/f90-mod/petscis.h
+index a28eff0fb1..66feea8453 100644
+--- a/src/vec/f90-mod/petscis.h
++++ b/src/vec/f90-mod/petscis.h
+@@ -57,7 +57,7 @@
+ !
+ !  End of Fortran include file for the IS package in PETSc
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_IS
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_SF
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_SECTION
+diff --git a/src/vec/f90-mod/petscvec.h b/src/vec/f90-mod/petscvec.h
+index 86c92d4528..20c811ac91 100644
+--- a/src/vec/f90-mod/petscvec.h
++++ b/src/vec/f90-mod/petscvec.h
+@@ -67,7 +67,7 @@
+ !
+ !  End of Fortran include file for the Vec package in PETSc
+ 
+-#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES)
++#if defined(_WIN32) && defined(PETSC_USE_SHARED_LIBRARIES) && !defined(__FLANG)
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_VEC
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_VECSCATTER
+ !DEC$ ATTRIBUTES DLLEXPORT::PETSC_NULL_VECTAGGER

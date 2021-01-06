@@ -1,0 +1,75 @@
+diff --git a/src/sys/f90-mod/petscsys.h90 b/src/sys/f90-mod/petscsys.h90
+index 3a97d2ee40..ee0b088c60 100644
+--- a/src/sys/f90-mod/petscsys.h90
++++ b/src/sys/f90-mod/petscsys.h90
+@@ -250,7 +250,7 @@
+ #if defined(PETSC_USE_LOG)
+       Interface
+       function PetscASend(c, d) bind(c,name='PetscASend') result(i)
+-          use iso_c_binding
++          use,intrinsic :: iso_c_binding
+           implicit none
+           integer(c_int), value :: c
+           integer(c_int), value :: d
+@@ -258,7 +258,7 @@
+       end function PetscASend
+ 
+       function PetscARecv(c, d) bind(c,name='PetscARecv') result(i)
+-          use iso_c_binding
++          use,intrinsic :: iso_c_binding
+           implicit none
+           integer(c_int), value :: c
+           integer(c_int), value :: d
+@@ -266,7 +266,7 @@
+       end function PetscARecv
+ 
+       function PetscAReduce() bind(c,name='PetscAReduce') result(i)
+-          use iso_c_binding
++          use,intrinsic :: iso_c_binding
+           implicit none
+           integer(c_int)        :: i
+       end function PetscAReduce
+diff --git a/src/sys/f90-mod/petscsysmod.F90 b/src/sys/f90-mod/petscsysmod.F90
+index 04942b484f..5e62ea90c9 100644
+--- a/src/sys/f90-mod/petscsysmod.F90
++++ b/src/sys/f90-mod/petscsysmod.F90
+@@ -241,7 +241,7 @@
+ !DEC$ ATTRIBUTES DLLEXPORT::petscrandomequals
+ #endif
+         module petscsys
+-        use iso_c_binding
++        use,intrinsic :: iso_c_binding
+         use petscsysdef
+         MPI_Comm PETSC_COMM_SELF
+         MPI_Comm PETSC_COMM_WORLD
+diff --git a/src/vec/vec/tutorials/ex43f.F90 b/src/vec/vec/tutorials/ex43f.F90
+index 0d0faac6ad..321b09f5fd 100644
+--- a/src/vec/vec/tutorials/ex43f.F90
++++ b/src/vec/vec/tutorials/ex43f.F90
+@@ -3,7 +3,7 @@
+ 
+     module mymoduleex43f
+ #include <petsc/finclude/petscvec.h>
+-      use iso_c_binding
++      use,intrinsic :: iso_c_binding
+       interface
+         subroutine fillupvector(vaddr,ierr) bind ( C, name = "fillupvector" )
+ !
+@@ -11,7 +11,7 @@
+ !     Warning: Variable 'vaddr' at (1) is a dummy argument of the BIND(C)
+ !              procedure 'fillupvector' but may not be C interoperable
+ !     
+-          use iso_c_binding
++          use,intrinsic :: iso_c_binding
+           integer(c_long_long) vaddr
+           integer(c_int) ierr
+         end subroutine fillupvector
+@@ -19,7 +19,7 @@
+     end module
+ 
+ #include <petsc/finclude/petscvec.h>
+-        use iso_c_binding
++        use,intrinsic :: iso_c_binding
+         use petscvec
+         use mymoduleex43f
+        implicit none

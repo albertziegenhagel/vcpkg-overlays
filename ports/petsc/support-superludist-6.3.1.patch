@@ -1,0 +1,22 @@
+diff --git a/src/mat/impls/aij/mpi/superlu_dist/superlu_dist.c b/src/mat/impls/aij/mpi/superlu_dist/superlu_dist.c
+index 4198c6fd4d..49f77f08b6 100644
+--- a/src/mat/impls/aij/mpi/superlu_dist/superlu_dist.c
++++ b/src/mat/impls/aij/mpi/superlu_dist/superlu_dist.c
+@@ -432,7 +432,7 @@ static PetscErrorCode MatView_Info_SuperLU_DIST(Mat A,PetscViewer viewer)
+   case LargeDiag_MC64:
+     ierr = PetscViewerASCIIPrintf(viewer,"  Row permutation LargeDiag_MC64\n");CHKERRQ(ierr);
+     break;
+-  case LargeDiag_AWPM:
++  case LargeDiag_HWPM:
+     ierr = PetscViewerASCIIPrintf(viewer,"  Row permutation LargeDiag_AWPM\n");CHKERRQ(ierr);
+     break;
+   case MY_PERMR:
+@@ -579,7 +579,7 @@ static PetscErrorCode MatGetFactor_aij_superlu_dist(Mat A,MatFactorType ftype,Ma
+       options.RowPerm = LargeDiag_MC64;
+       break;
+     case 2:
+-      options.RowPerm = LargeDiag_AWPM;
++      options.RowPerm = LargeDiag_HWPM;
+       break;
+     case 3:
+       options.RowPerm = MY_PERMR;

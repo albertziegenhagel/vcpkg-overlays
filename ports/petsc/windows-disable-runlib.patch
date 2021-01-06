@@ -1,0 +1,14 @@
+diff --git a/config/install.py b/config/install.py
+index 654ae10200..2258d40754 100755
+--- a/config/install.py
++++ b/config/install.py
+@@ -364,7 +364,8 @@ for file in files:
+       return
+     shutil.copy2(src, dst)
+     if os.path.splitext(dst)[1] == '.'+self.arLibSuffix:
+-      self.executeShellCommand(self.ranlib+' '+dst)
++      if not "msys" in self.arch:
++        self.executeShellCommand(self.ranlib+' '+dst)
+     if os.path.splitext(dst)[1] == '.dylib' and os.path.isfile('/usr/bin/install_name_tool'):
+       [output,err,flg] = self.executeShellCommand("otool -D "+src)
+       oldname = output[output.find("\n")+1:]
