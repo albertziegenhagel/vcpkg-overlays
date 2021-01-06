@@ -1,0 +1,11 @@
+--- a/Rendering/Parallel/CMakeLists.txt	Wed Jun 24 18:25:19 2020
++++ b/Rendering/Parallel/CMakeLists.txt	Tue Aug 18 15:29:13 2020
+@@ -34,7 +34,7 @@
+ vtk_module_add_module(VTK::RenderingParallel
+   CLASSES ${classes}
+   SOURCES ${sources}
+-  PRIVATE_HEADERS ${private_headers})
++  HEADERS ${private_headers})
+ 
+ vtk_module_definitions(VTK::RenderingParallel
+   PRIVATE
