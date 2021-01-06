@@ -1,0 +1,85 @@
+diff --git a/config/packages/petsc.py b/config/packages/petsc.py
+index 0f5e104f4..9d7869c54 100644
+--- a/config/packages/petsc.py
++++ b/config/packages/petsc.py
+@@ -33,8 +33,12 @@ class PETSc(package.Package):
+         self.log.Exit('PETSC_DIR enviroment variable is not set')
+ 
+   def LoadVersion(self):
++    print("self.dir: " + self.dir)
++    petscversion_h = os.path.join(self.dir,'include','petscversion.h')
++    if not os.path.exists(petscversion_h):
++      petscversion_h = os.path.join(self.dir,'..','include','petscversion.h')
+     try:
+-      f = open(os.path.join(self.dir,'include','petscversion.h'))
++      f = open(os.path.join(petscversion_h))
+       for l in f.readlines():
+         l = l.split()
+         if len(l) == 3:
+@@ -64,6 +68,7 @@ class PETSc(package.Package):
+         (status, self.branch)  = self.RunCommand('cd '+self.dir+';git describe --contains --all HEAD')
+ 
+   def LoadConf(self):
++    is_vcpkg_debug = False
+     if 'PETSC_ARCH' in os.environ and os.environ['PETSC_ARCH']:
+       self.isinstall = False
+       self.arch = os.environ['PETSC_ARCH']
+@@ -77,6 +82,9 @@ class PETSc(package.Package):
+       self.isinstall = True
+       petscvariables = os.path.join(self.dir,'lib','petsc','conf','petscvariables')
+       petscconf_h = os.path.join(self.dir,'include','petscconf.h')
++      if not os.path.exists(petscconf_h):
++        petscconf_h = os.path.join(self.dir,'..','include','petscconf.h')
++        is_vcpkg_debug = True
+ 
+     self.buildsharedlib = False
+     self.bfort = 'nobfortinpetsc'
+@@ -175,3 +183,7 @@ class PETSc(package.Package):
+       else:
+         self.log.Exit('Cannot process file ' + petscconf_h)
+ 
++    if is_vcpkg_debug:
++      self.debug = True
++      self.arch = self.arch.replace("opt", 'debug')
++
+diff --git a/gmakefile b/gmakefile
+index bb8dbac75..932d9432a 100644
+--- a/gmakefile
++++ b/gmakefile
+@@ -67,6 +67,9 @@ PETSCCONFIGDIR := $(PETSC_DIR)/config
+ ifeq ($(wildcard $(PETSCCONFIGDIR)/gmakegen.py),)
+   PETSCCONFIGDIR := $(PETSC_DIR)/share/petsc/examples/config
+ endif
++ifeq ($(wildcard $(PETSCCONFIGDIR)/gmakegen.py),)
++  PETSCCONFIGDIR := $(PETSC_DIR)/../share/petsc/examples/config
++endif
+ 
+ $(generated) : $(slepcconf) $(slepcvariables) $(PETSCCONFIGDIR)/gmakegen.py
+ 	$(PYTHON) $(PETSCCONFIGDIR)/gmakegen.py --petsc-arch=$(PETSC_ARCH_DIR) --pkg-dir=$(SLEPC_DIR) --pkg-name=slepc --pkg-pkgs=$(spkgs) --pkg-arch=$(PETSC_ARCH)
+diff --git a/gmakefile.test b/gmakefile.test
+index 63f028217..b2ffd5ea9 100644
+--- a/gmakefile.test
++++ b/gmakefile.test
+@@ -97,6 +97,9 @@ PETSCCONFIGDIR ?= $(PETSC_DIR)/config
+ ifeq ($(wildcard $(PETSCCONFIGDIR)/gmakegentest.py),)
+   PETSCCONFIGDIR := $(PETSC_DIR)/share/petsc/examples/config
+ endif
++ifeq ($(wildcard $(PETSCCONFIGDIR)/gmakegen.py),)
++  PETSCCONFIGDIR := $(PETSC_DIR)/../share/petsc/examples/config
++endif
+ 
+ $(generatedtest) : $(slepcconf) $(slepcvariables) $(PETSCCONFIGDIR)/gmakegentest.py $(TESTDIR)/.DIR | $$(@D)/.DIR
+ 	$(PYTHON) $(PETSCCONFIGDIR)/gmakegentest.py --petsc-dir=$(PETSC_DIR) --petsc-arch=$(PETSC_ARCH_DIR) --testdir=$(TESTDIR) --srcdir=$(TESTSRCDIR) --pkg-name=slepc --pkg-pkgs=$(spkgs) --pkg-arch=$(PETSC_ARCH) --pkg-dir=$(SLEPC_DIR)
+diff --git a/makefile b/makefile
+index d73f97dd6..b76db3dee 100644
+--- a/makefile
++++ b/makefile
+@@ -68,7 +68,7 @@ info:
+ 	-@echo "Using SLEPc configuration flags:"
+ 	-@grep "\#define " ${SLEPCCONF_H}
+ 	-@echo "-----------------------------------------"
+-	-@grep "define PETSC_VERSION" ${PETSC_DIR}/include/petscversion.h | ${SED} "s/........//"
++	# -@grep "define PETSC_VERSION" ${PETSC_DIR}/include/petscversion.h | ${SED} "s/........//"
+ 	-@echo "-----------------------------------------"
+ 	-@echo "Using PETSc configure options: ${CONFIGURE_OPTIONS}"
+ 	-@echo "Using PETSc configuration flags:"

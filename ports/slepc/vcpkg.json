@@ -1,0 +1,9 @@
+{
+  "name": "slepc",
+  "version-string": "3.13.3",
+  "homepage": "https://slepc.upv.es/",
+  "description": "Scalable Library for Eigenvalue Problem Computations.",
+  "dependencies": [
+    "petsc"
+  ]
+}
