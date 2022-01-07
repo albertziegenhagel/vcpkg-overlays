@@ -10,7 +10,7 @@
     },
     "lapack-reference",
     "scalapack-reference",
-    "msmpi",
+    "mpi",
     "metis",
     "parmetis"
   ]

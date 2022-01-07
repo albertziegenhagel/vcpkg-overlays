@@ -8,31 +8,26 @@
     "lapack",
     "mpi"
   ],
-  "features":  [
-    {
-      "name": "fortran",
+  "features":  {
+    "fortran" : {
       "description": "Fortran bindings for PETSc"
     },
-    {
-      "name": "complex",
+    "complex" : {
       "description": "Complex scalar support for PETSc"
     },
-    {
-      "name": "scalapack",
+    "scalapack" : {
       "description": "ScaLAPACK support for PETSc",
       "dependencies": [
         "scalapack-reference"
       ]
     },
-    {
-      "name": "metis",
+    "metis" : {
       "description": "METIS support for PETSc",
       "dependencies": [
         "metis"
       ]
     },
-    {
-      "name": "parmetis",
+    "parmetis" : {
       "description": "ParMETIS support for PETSc",
       "dependencies": [
         "parmetis",
@@ -42,15 +37,13 @@
         }
       ]
     },
-    {
-      "name": "hypre",
+    "hypre" : {
       "description": "HYPRE support for PETSc",
       "dependencies": [
         "hypre"
       ]
     },
-    {
-      "name": "superludist",
+    "superludist" : {
       "description": "SuperLU-Dist support for PETSc",
       "dependencies": [
         "superludist",
@@ -60,8 +53,7 @@
         }
       ]
     },
-    {
-      "name": "mumps",
+    "mumps" : {
       "description": "MUMPS support for PETSc",
       "dependencies": [
         "mumps",
@@ -71,8 +63,7 @@
         }
       ]
     },
-    {
-      "name": "hdf5",
+    "hdf5" : {
       "description": "HDF5 support for PETSc",
       "dependencies": [
         {
@@ -81,5 +72,5 @@
         }
       ]
     }
-  ]
+  }
 }

@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    env:
+      VCPKG_BINARY_SOURCES: 'clear;nuget,GitHub,readwrite'
+      VCPKG_OVERLAY_PORTS: '${{ github.workspace }}/ports'
+      VCPKG_DEFAULT_TRIPLET: '${{ matrix.triplet }}'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['windows-2019'] #, 'ubuntu-20.04']
+        include:
+          - os: 'windows-2019'
+            triplet: 'x64-windows'
+          # - os: 'ubuntu-20.04'
+          #   triplet: 'x64-linux'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: vcpkgcache
+        with:
+          path: |
+            ./vcpkg
+            !./vcpkg/buildtrees/*
+          key: ${{ matrix.os }}-vcpkg-${{ hashFiles('vcpkg/installed/vcpkg/status') }}
+          restore-keys: |
+            ${{ matrix.os }}-vcpkg-
+
+      - name: Init vcpkg
+        if: steps.vcpkgcache.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+
+      - name: Update vcpkg
+        if: steps.vcpkgcache.outputs.cache-hit == 'true'
+        run: |
+          cd vcpkg
+          git pull
+
+      - name: Bootstrap vcpkg (windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd vcpkg
+          ./bootstrap-vcpkg.bat
+
+      - name: Bootstrap vcpkg (linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd vcpkg
+          ./bootstrap-vcpkg.sh
+
+      - name: Patch vcpkg
+        run: cp ./scripts/cmake/* ./vcpkg/scripts/cmake
+
+      - name: Setup NuGet Credentials (windows)
+        if: runner.os == 'Windows'
+        run: >
+          $nuget = ./vcpkg/vcpkg fetch nuget;
+          &$nuget sources add
+          -source "https://nuget.pkg.github.com/albertziegenhagel/index.json"
+          -name "GitHub"
+          -username "${{ github.repository_owner }}"
+          -password "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Setup NuGet Credentials (linux/macOS)
+        if: runner.os != 'Windows'
+        run: >
+          mono `vcpkg/vcpkg fetch nuget | tail -n 1`
+          sources add
+          -source "https://nuget.pkg.github.com/albertziegenhagel/index.json"
+          -storepasswordincleartext
+          -name "GitHub"
+          -username "${{ github.repository_owner }}"
+          -password "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Update outdated packages
+        run: |
+          ./vcpkg/vcpkg update
+          ./vcpkg/vcpkg remove --outdated
+
+      - name: Install packages
+        run: >
+          ./vcpkg/vcpkg install
+          mpi
+          lapack-reference
+          scalapack-reference
+          mumps
+          superludist[parmetis]
+          petsc[hdf5,mumps,superludist,hypre,metis,parmetis,scalapack]
+          slepc
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: build-logs
+          path: ${{ github.workspace }}/vcpkg/buildtrees/**/*.log
