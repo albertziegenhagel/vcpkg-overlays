@@ -12,11 +12,10 @@
     "lapack",
     "parmetis"
   ],
-  "features":  [
-    {
-      "name": "parmetis",
+  "features":  {
+    "parmetis" : {
       "description": "Enable parmetis support",
       "dependencies": [ "parmetis" ]
     }
-  ]
+  }
 }
