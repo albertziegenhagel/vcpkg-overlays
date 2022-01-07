@@ -64,13 +64,6 @@ jobs:
       - name: Patch vcpkg
         run: cp ./scripts/cmake/* ./vcpkg/scripts/cmake
 
-      - name: Patch CMake
-        if: runner.os == 'Windows'
-        run: |
-          ./vcpkg/vcpkg fetch cmake
-          $file = ls ./vcpkg/downloads/tools/cmake-*-windows/cmake-*-win32-x86/share/cmake-*/Modules/Compiler/Clang.cmake
-          (Get-Content -path $file.FullName -Raw).Replace('set(CMAKE_INCLUDE_SYSTEM_FLAG_${lang} "-imsvc ")', '') | Set-Content -Path $file.FullName
-
       - name: Setup NuGet Credentials (windows)
         if: runner.os == 'Windows'
         run: >
